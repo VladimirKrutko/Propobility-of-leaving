@@ -7,22 +7,42 @@ import pickle
 
 app = FastAPI()
 
-class Item (BaseModel):
-    name: str
-    number: int
-    opt: Optional[str] = None
+class Data_for_model(BaseModel):
+    city_development_index: float
+    gender: float
+    relevent_experience: float
+    enrolled_university: float
+    experience: float
+    company_size: float
+    company_type: float
+    last_new_job: float
+    training_hours: float
+    Graduate: float
+    High_School: float
+    Masters: float
+    Phd: float
+    Primary_School: float
+    Arts: float
+    Business_Degree: float
+    Humanities: float
+    No_Major: float
+    Other: float
+    STEM: float
 
-@app.post("/item/")
-async def read_item(item: Item):
-    return '0'
+@app.post("/predict/")
+async def read_item(data: Data_for_model):
+
+    X = [list(dict(data).values())]
+
+    with open('project_model.pickl', 'rb') as f:
+        model = pickle.load(f)
+
+    pred = model.predict_proba(X)[0]
+    return {0: pred[0], 1:pred[1]}
 
 @app.get("/")
 async def root():
-    with open('model.pickl', 'rb') as f:
-        model = pickle.load(f)
-
-
-    return {"message": " ".join([str(i) for i in model.classes_])}
+    return {"message": "Hello"}
 
 if __name__ == "__main__":
-    uvicorn.run('main:app',reload=True)
+    uvicorn.run('implemet_model:app',reload=True)
